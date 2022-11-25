@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
@@ -45,7 +45,7 @@ async function run() {
             const query = { email: email };
             const user = await usersCollection.findOne(query);
             if (user) {
-                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
+                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '30D' });
                 return res.send({ accessToken: token });
             }
             // console.log(user); //check first time without [L-47-50]
@@ -60,6 +60,16 @@ async function run() {
             res.send(result);
         });
 
+        // get id wise spacific single product card
+        app.get("/catagory/:id", async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            const catagory = await categoriesCollection.findOne(query)
+            const brandName = catagory.brandName;
+            const filter = { brandName: brandName }
+            const result = await productsCollection.find(filter).toArray()
+            res.send(result)
+        });
 
     }
     finally {
