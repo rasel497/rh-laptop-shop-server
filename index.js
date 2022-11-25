@@ -23,6 +23,7 @@ async function run() {
     try {
         const categoriesCollection = client.db("laptopShop").collection("homeCategories");
         const productsCollection = client.db("laptopShop").collection("productsCategory");
+        const usersCollection = client.db("laptopShop").collection("users");
 
         // get homeCategory from MongoDb
         app.get('/homeCategories', async (req, res) => {
@@ -36,6 +37,13 @@ async function run() {
             const query = {};
             const categories = await productsCollection.find(query).toArray();
             res.send(categories);
+        });
+
+        // create users save to MongoDb store
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
         });
 
 
