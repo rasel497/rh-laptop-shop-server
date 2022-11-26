@@ -60,6 +60,7 @@ async function run() {
             res.send(result);
         });
 
+
         // get id wise spacific single product card
         app.get("/catagory/:id", async (req, res) => {
             const id = req.params.id
@@ -87,6 +88,38 @@ async function run() {
             const user = await usersCollection.findOne(query);
             res.send({ isSeller: user?.role == 'seller' });
         });
+
+        // 03.check buyer or not Then access & show spacific routes
+        app.get('/users/buyer/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await usersCollection.findOne(query);
+            res.send({ isBuyer: user?.role == 'buyer' });
+            console.log(user);
+        });
+
+        //  Update set users admin role in update user
+        app.put('/users/admin/:id', async (req, res) => {
+            // verifyAdmin func niye jawr por upore call kore, ei code comment korsi [86-91]
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const user = await usersCollection.findOne(query);
+            if (user?.role !== 'admin') {
+                return res.status(403).send({ message: 'forbidden accesss' })
+            }
+
+            // const id = req.params.id;
+            // const filter = { _id: ObjectId(id) }
+            // const options = { upsert: true };
+            // const updateDoc = {
+            //     $set: {
+            //         role: 'admin'
+            //     }
+            // }
+            // const result = await usersCollection.updateOne(filter, updateDoc, options)
+            // res.send(result);
+        });
+
 
     }
     finally {
