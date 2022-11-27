@@ -61,6 +61,13 @@ async function run() {
         });
 
 
+        // Add Doctor get
+        app.get('/brandNames', async (req, res) => {
+            const query = {};
+            const result = await categoriesCollection.find(query).project({ brandName: 1 }).toArray();
+            res.send(result);
+        });
+
         // get id wise spacific single product card
         app.get("/catagory/:id", async (req, res) => {
             const id = req.params.id
@@ -95,7 +102,7 @@ async function run() {
             const query = { email }
             const user = await usersCollection.findOne(query);
             res.send({ isBuyer: user?.role == 'buyer' });
-            console.log(user);
+            // console.log(user);
         });
 
         //  Update set users admin role in update user
