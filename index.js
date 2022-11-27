@@ -76,6 +76,33 @@ async function run() {
             res.send(result);
         });
 
+        // booikg post save Booking to MongoDB database
+        app.post('/bookings', async (req, res) => {
+            const booking = req.body;
+            console.log(booking);
+            const query = {
+                productTitle: booking.productTitle,
+                buyerEmail: booking.buyerEmail,
+                meetLocation: booking.meetLocation
+            }
+            const alreadyBooked = await bookingsCollection.find(query).toArray();
+
+            if (alreadyBooked.length) {
+                const message = `You already have a booking on ${booking.appoinmentDate}`;
+                return res.send({ acknowledged: false, message });
+            }
+
+            const result = await bookingsCollection.insertOne(booking);
+            res.send(result);
+        });
+
+        // after post api now get my bookings myorder
+        app.get('/bookings', async (req, res) => {
+            const email = req.query.email;
+            const query = { buyerEmail: email };
+            const bookings = await bookingsCollection.find(query).toArray();
+            res.send(bookings);
+        });
 
         // get id wise spacific single product card
         app.get("/catagory/:id", async (req, res) => {
