@@ -24,6 +24,7 @@ async function run() {
         const categoriesCollection = client.db("laptopShop").collection("homeCategories");
         const productsCollection = client.db("laptopShop").collection("productsCategory");
         const usersCollection = client.db("laptopShop").collection("users");
+        const bookingsCollection = client.db("laptopShop").collection("bookings");
 
         // get homeCategory from MongoDb
         app.get('/homeCategories', async (req, res) => {
@@ -61,12 +62,20 @@ async function run() {
         });
 
 
-        // Add Doctor get
+        // Add Product get
         app.get('/brandNames', async (req, res) => {
             const query = {};
             const result = await categoriesCollection.find(query).project({ brandName: 1 }).toArray();
             res.send(result);
         });
+
+        // post & create new product in MongoDb stores
+        app.post('/addproduct', async (req, res) => {
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            res.send(result);
+        });
+
 
         // get id wise spacific single product card
         app.get("/catagory/:id", async (req, res) => {
@@ -115,16 +124,6 @@ async function run() {
                 return res.status(403).send({ message: 'forbidden accesss' })
             }
 
-            // const id = req.params.id;
-            // const filter = { _id: ObjectId(id) }
-            // const options = { upsert: true };
-            // const updateDoc = {
-            //     $set: {
-            //         role: 'admin'
-            //     }
-            // }
-            // const result = await usersCollection.updateOne(filter, updateDoc, options)
-            // res.send(result);
         });
 
 
