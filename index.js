@@ -132,6 +132,14 @@ async function run() {
             res.send({ isSeller: user?.role == 'seller' });
         });
 
+        // check role seller or not Then access
+        app.get('/users/seller/:role', async (req, res) => {
+            const role = req.params.role;
+            const query = { role }
+            const seller = await usersCollection.findOne(query);
+            res.send({ isSeller: seller?.role == 'seller' });
+        });
+
         // 03.check buyer or not Then access & show spacific routes
         app.get('/users/buyer/:email', async (req, res) => {
             const email = req.params.email;
@@ -153,6 +161,12 @@ async function run() {
 
         });
 
+        // get all users
+        app.get('/users', async (req, res) => {
+            const query = {};
+            const users = await usersCollection.find(query).toArray();
+            res.send(users);
+        });
 
     }
     finally {
