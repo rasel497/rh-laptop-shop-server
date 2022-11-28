@@ -27,7 +27,7 @@ async function run() {
         const productsCollection = client.db("laptopShop").collection("productsCategory");
         const usersCollection = client.db("laptopShop").collection("users");
         const bookingsCollection = client.db("laptopShop").collection("bookings");
-
+        const paymentsCollection = client.db("laptopShop").collection("payments");
 
         // get homeCategory from MongoDb
         app.get('/homeCategories', async (req, res) => {
@@ -117,6 +117,21 @@ async function run() {
             })
         });
 
+        //  save paymet price in database
+        app.post('/payments', async (req, res) => {
+            const payment = req.body;
+            const result = await paymentsCollection.insertOne(payment);
+            const id = payment.bookingId;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                }
+            }
+            const updatedResult = await bookingsCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        });
 
         // after post api now get my bookings myorder
         app.get('/bookings', async (req, res) => {
