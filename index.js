@@ -3,6 +3,8 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -25,6 +27,7 @@ async function run() {
         const productsCollection = client.db("laptopShop").collection("productsCategory");
         const usersCollection = client.db("laptopShop").collection("users");
         const bookingsCollection = client.db("laptopShop").collection("bookings");
+
 
         // get homeCategory from MongoDb
         app.get('/homeCategories', async (req, res) => {
@@ -96,12 +99,39 @@ async function run() {
             res.send(result);
         });
 
+        // using for stripe payment from: https://stripe.com/docs/payments/quickstart
+        app.post('/create-payment-intent', async (req, res) => {
+            const booking = req.body;
+            const price = booking.price;
+            const amount = price * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: "usd",
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ]
+            });
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            })
+        });
+
+
         // after post api now get my bookings myorder
         app.get('/bookings', async (req, res) => {
             const email = req.query.email;
             const query = { buyerEmail: email };
             const bookings = await bookingsCollection.find(query).toArray();
             res.send(bookings);
+        });
+
+        // using for pay option click pay work bellow
+        app.get('/bookings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const booking = await bookingsCollection.findOne(query);
+            res.send(booking);
         });
 
         // get id wise spacific single product card
@@ -132,14 +162,6 @@ async function run() {
             res.send({ isSeller: user?.role == 'seller' });
         });
 
-        // check role seller or not Then access
-        app.get('/users/seller/:role', async (req, res) => {
-            const role = req.params.role;
-            const query = { role }
-            const seller = await usersCollection.findOne(query);
-            res.send({ isSeller: seller?.role == 'seller' });
-        });
-
         // 03.check buyer or not Then access & show spacific routes
         app.get('/users/buyer/:email', async (req, res) => {
             const email = req.params.email;
@@ -148,6 +170,7 @@ async function run() {
             res.send({ isBuyer: user?.role == 'buyer' });
             // console.log(user);
         });
+
 
         //  Update set users admin role in update user
         app.put('/users/admin/:id', async (req, res) => {
