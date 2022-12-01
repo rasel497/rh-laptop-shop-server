@@ -220,9 +220,18 @@ async function run() {
 
         // get all users
         app.get('/users', async (req, res) => {
-            const query = {};
+            const role = req.query.role;
+            const query = { role: role };
             const users = await usersCollection.find(query).toArray();
             res.send(users);
+        });
+
+        // delete seller and buyer
+        app.delete('/user/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const user = await usersCollection.deleteOne(query);
+            res.send(user);
         });
 
     }
