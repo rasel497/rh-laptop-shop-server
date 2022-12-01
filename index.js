@@ -293,6 +293,24 @@ async function run() {
         //     res.send(result);
         // });
 
+        // my products for seller
+        app.get('/myproducts', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const products = await productsCollection.find(query).toArray();
+            res.send(products);
+            // console.log(email) 
+        });
+
+        // myproduct
+        app.delete('/myproduct/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await productsCollection.deleteOne(query);
+            res.send(result);
+
+        });
+
     }
     finally {
 
