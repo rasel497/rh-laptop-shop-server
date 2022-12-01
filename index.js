@@ -311,6 +311,30 @@ async function run() {
 
         });
 
+        // Put advertiseds items
+        app.put('/advertiseds/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+            const filter = { _id: ObjectId(id) };
+            const option = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    isAdvertiseds: true
+                }
+            };
+            const reportedproducts = await productsCollection.updateOne(filter, updatedDoc, option);
+            res.send(reportedproducts);
+        });
+
+        // my advertiseds for seller
+        app.get('/advertiseds', async (req, res) => {
+            const query = { isAdvertiseds: true }
+            const products = await productsCollection.find(query).toArray();
+            res.send(products);
+        });
+
+
+
     }
     finally {
 
