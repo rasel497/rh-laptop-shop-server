@@ -234,6 +234,24 @@ async function run() {
             res.send(user);
         });
 
+        // sellerVerified
+        app.put('/sellerVerified/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+            const filter = { _id: ObjectId(id) };
+            const option = {
+                upsert: true
+            }
+            const docUpdate = {
+                $set: {
+                    isVerified: true
+                }
+            }
+            const result = await usersCollection.updateOne(filter, docUpdate, option);
+            res.send(result);
+        });
+
+
     }
     finally {
 
