@@ -251,6 +251,47 @@ async function run() {
             res.send(result);
         });
 
+        // Reported items
+        app.get('/reportedproducts', async (req, res) => {
+            const query = { isReported: true };
+            const reportedproducts = await productsCollection.find(query).toArray();
+            res.send(reportedproducts);
+        });
+
+        // Put Reported items
+        app.put('/reportedproducts/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+            const filter = { _id: ObjectId(id) };
+            const option = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    isReported: true
+                }
+            };
+            const reportedproducts = await productsCollection.updateOne(filter, updatedDoc, option);
+            res.send(reportedproducts);
+        });
+
+        // reportedproducts deletes
+        app.delete('/reportedproducts/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const user = await productsCollection.deleteOne(query);
+            res.send(user);
+        });
+        // temporary data insert in databases == send from Thander Client
+        // app.get('/addTepmData', async (req, res) => {
+        //     const filter = {}
+        //     const options = { upsert: true }
+        //     const updatedDoc = {
+        //         $set: {
+        //             postDate: new Date()
+        //         }
+        //     }
+        //     const result = await productsCollection.updateMany(filter, updatedDoc, options);
+        //     res.send(result);
+        // });
 
     }
     finally {
