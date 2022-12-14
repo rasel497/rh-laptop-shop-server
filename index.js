@@ -286,7 +286,7 @@ async function run() {
         //     const options = { upsert: true }
         //     const updatedDoc = {
         //         $set: {
-        //             postDate: new Date()
+        //             productStatus: "Excellent"
         //         }
         //     }
         //     const result = await productsCollection.updateMany(filter, updatedDoc, options);
