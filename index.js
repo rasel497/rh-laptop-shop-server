@@ -333,7 +333,13 @@ async function run() {
             res.send(products);
         });
 
-
+        // meeting with client and seller
+        app.get('/meetingtimes', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const products = await productsCollection.find(query).toArray();
+            res.send(products);
+        });
 
     }
     finally {
