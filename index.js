@@ -5,14 +5,12 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-
 const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
 app.use(cors());
 app.use(express.json());
-
 
 // MongoDB connections
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.mpr3cem.mongodb.net/?retryWrites=true&w=majority`;
@@ -36,7 +34,6 @@ function verifyJWT(req, res, next) {
         req.decoded = decoded;
         next();
     });
-
 }
 
 // Start MongoDb collection acsess
@@ -75,14 +72,12 @@ async function run() {
             res.status(403).send({ accessToken: '' });
         });
 
-
         // create users save to MongoDb store
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
-
 
         // Add Product get
         app.get('/brandNames', async (req, res) => {
@@ -108,12 +103,10 @@ async function run() {
                 meetLocation: booking.meetLocation
             }
             const alreadyBooked = await bookingsCollection.find(query).toArray();
-
             if (alreadyBooked.length) {
                 const message = `You already have a booking on ${booking.appoinmentDate}`;
                 return res.send({ acknowledged: false, message });
             }
-
             const result = await bookingsCollection.insertOne(booking);
             res.send(result);
         });
@@ -179,7 +172,6 @@ async function run() {
             res.send(result)
         });
 
-
         // 01.check admin or not Then access & isAdmin show spacific routes
         app.get('/users/admin/:email', async (req, res) => {
             const email = req.params.email;
@@ -205,7 +197,6 @@ async function run() {
             // console.log(user);
         });
 
-
         //  Update set users admin role in update user
         app.put('/users/admin/:id', async (req, res) => {
             // verifyAdmin func niye jawr por upore call kore, ei code comment korsi [86-91]
@@ -215,7 +206,6 @@ async function run() {
             if (user?.role !== 'admin') {
                 return res.status(403).send({ message: 'forbidden accesss' })
             }
-
         });
 
         // get all users
@@ -233,23 +223,23 @@ async function run() {
             const user = await usersCollection.deleteOne(query);
             res.send(user);
         });
-
-        // sellerVerified
-        app.put('/sellerVerified/:id', async (req, res) => {
-            const id = req.params.id;
-            // console.log(id);
-            const filter = { _id: ObjectId(id) };
-            const option = {
-                upsert: true
-            }
-            const docUpdate = {
-                $set: {
-                    isVerified: true
+        productTitle: data.productTitle,
+            // sellerVerified
+            app.put('/sellerVerified/:id', async (req, res) => {
+                const id = req.params.id;
+                // console.log(id);
+                const filter = { _id: ObjectId(id) };
+                const option = {
+                    upsert: true
                 }
-            }
-            const result = await usersCollection.updateOne(filter, docUpdate, option);
-            res.send(result);
-        });
+                const docUpdate = {
+                    $set: {
+                        isVerified: true
+                    }
+                }
+                const result = await usersCollection.updateOne(filter, docUpdate, option);
+                res.send(result);
+            });
 
         // Reported items
         app.get('/reportedproducts', async (req, res) => {
@@ -308,7 +298,6 @@ async function run() {
             const query = { _id: ObjectId(id) }
             const result = await productsCollection.deleteOne(query);
             res.send(result);
-
         });
 
         // Put advertiseds items
@@ -332,28 +321,15 @@ async function run() {
             const products = await productsCollection.find(query).toArray();
             res.send(products);
         });
-
-        // meeting with client and seller
-        app.get('/meetingtimes', async (req, res) => {
-            const email = req.query.email;
-            const query = { email: email }
-            const products = await productsCollection.find(query).toArray();
-            res.send(products);
-        });
-
     }
-    finally {
-
-    }
+    finally { }
 }
 run().catch(console.log);
-
 
 // Initial and Basic Setup
 app.get('/', (req, res) => {
     res.send('RH-Laptop-Shop is running...');
 });
-
 app.listen(port, () => {
     console.log(`RH-Laptop-Shop is running: ${port}`);
 });

@@ -1,7 +1,6 @@
 {
   "name": "laptop-shop-server",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -18,5 +17,15 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.12.1",
     "stripe": "^11.1.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rasel497/Rh-laptop-shop-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rasel497/Rh-laptop-shop-server/issues"
+  },
+  "homepage": "https://github.com/rasel497/Rh-laptop-shop-server#readme",
+  "description": ""
 }
